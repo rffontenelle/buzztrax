@@ -33,7 +33,7 @@ jobs:
           echo $pofiles
           git commit -m 'po: update translations' $pofiles
         else
-          echo "No tracked PO files changed'
+          echo 'No tracked PO files changed'
         fi
 
     - name: Commit new PO files, if any
@@ -47,7 +47,7 @@ jobs:
           sed "s|$| $langs|" po/LINGUAS | tr ' ' '\n' | sort | tr '\n' ' '
           git commit -m 'po: add new translations' po/*.po po/LINGUAS
         else
-          echo "No new PO files to add'
+          echo 'No new PO files to add'
         fi
 
     - name: Open a pull request
