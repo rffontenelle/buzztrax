@@ -1,0 +1,52 @@
+name: Download translations
+
+on:
+  workflow_dispatch:
+  #scheduled:
+    # run daily at 00:00.
+  #  - cron: '0 0 * * *'
+
+permissions:
+  pull-requests: write
+
+jobs:
+  translations:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up git config and branch
+      run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git branch translations
+        git swith translations
+
+    - name: Download translations from Translation Project
+      run: |
+        ./download-translations
+
+    - name: Commit changed PO files, if any
+      run: |
+        pofiles=$(git status -s po/*.po | grep '^ M' | sed 's|^ M ||')
+        if [ ! -z "$pofiles" ]; then
+          echo $pofiles
+          git commit -m 'po: update translations' $pofiles
+        else
+          echo "No tracked PO files changed'
+        fi
+
+    - name: Commit new PO files, if any
+      run: |
+        pofiles=$(git status -s po/*.po | grep '^??' | sed 's|^?? ||')
+        if [ ! -z "$pofiles" ]; then
+          echo $pofiles
+          git add $pofiles
+          langs=$(echo $pofiles | sed 's|po/||g;s|\.po||g')
+          echo langs
+          sed "s|$| $langs|" po/LINGUAS | tr ' ' '\n' | sort | tr '\n' ' '
+          git commit -m 'po: add new translations' po/*.po po/LINGUAS
+        else
+          echo "No new PO files to add'
+        fi
+
+     - name: Open a pull request
+       uses: peter-evans/create-pull-request@6
