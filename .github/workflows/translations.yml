@@ -13,6 +13,8 @@ jobs:
   translations:
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v4
+
     - name: Set up git config and branch
       run: |
         git config user.name github-actions
