@@ -49,4 +49,4 @@ jobs:
         fi
 
     - name: Open a pull request
-      uses: peter-evans/create-pull-request@6
+      uses: peter-evans/create-pull-request@v6
