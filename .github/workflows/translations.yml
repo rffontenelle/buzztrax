@@ -48,5 +48,5 @@ jobs:
           echo "No new PO files to add'
         fi
 
-     - name: Open a pull request
-       uses: peter-evans/create-pull-request@6
+    - name: Open a pull request
+      uses: peter-evans/create-pull-request@6
