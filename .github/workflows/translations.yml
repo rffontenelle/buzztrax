@@ -22,13 +22,14 @@ jobs:
     - name: Output list of languages files
       id: pofiles
       run: |
+        git status -s po/*.po | grep '^??' | sed 's|^?? ||'
         echo "new=$(git status -s po/*.po | grep '^??' | sed 's|^?? ||')" >> GITHUB_OUTPUT
         echo "changed=$(git status -s po/*.po | grep '^ M' | sed 's|^ M ||')" >> GITHUB_OUTPUT
 
     - name: Update LINGUAS with new languages, if any
       run: |
-        if [ ! -z "${{steps.pofiles.outputs.new}}" ]; then
-          langs=$(echo ${{steps.pofiles.outputs.new}} | s|po/||g;s|\.po||g')
+        if [ -n "${{ steps.pofiles.outputs.new }}" ]; then
+          langs=$(echo "${{ steps.pofiles.outputs.new }}" | sed 's|po/||g;s|\.po||g')
           echo "INFO: Adding language codes to po/LINGUAS: $langs"
           for l in "$langs"; do echo $l >> po/LINGUAS
           sort -u po/LINGUAS > po/LINGUAS.tmp
