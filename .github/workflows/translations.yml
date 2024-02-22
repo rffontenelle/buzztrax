@@ -13,12 +13,7 @@ jobs:
   translations:
     runs-on: ubuntu-latest
     steps:
-    - name: Set up git config and branch
-      run: |
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        git branch translations
-        git swith translations
+    - name: actions/checkout@v4
 
     - name: Download translations from Translation Project
       run: |
