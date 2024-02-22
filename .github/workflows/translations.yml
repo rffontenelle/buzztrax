@@ -22,7 +22,7 @@ jobs:
     - name: Output the new and changed translations files
       id: pofiles
       run: |
-        echo "new=$(git status -s po/*.po | grep '^??' | sed 's|^?? || | tr '\n' ' '')" >> $GITHUB_OUTPUT
+        echo "new=$(git status -s po/*.po | grep '^??' | sed 's|^?? ||' | tr '\n' ' '')" >> $GITHUB_OUTPUT
         echo "changed=$(git status -s po/*.po | grep '^ M' | sed 's|^ M ||' | tr '\n' ' ')" >> $GITHUB_OUTPUT
 
     - name: Update LINGUAS with new languages, if any
