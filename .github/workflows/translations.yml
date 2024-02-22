@@ -29,7 +29,7 @@ jobs:
       run: |
         if [ -n "${{ steps.pofiles.outputs.new }}" ]; then
           langs=$(echo "${{ steps.pofiles.outputs.new }}" | sed 's|po/||g;s|\.po||g')
-          echo "INFO: Adding language codes to po/LINGUAS: $langs"
+          echo "Adding to po/LINGUAS: $langs"
           echo "$langs" >> po/LINGUAS
           (tr ' ' '\n' | sort -u) < po/LINGUAS > tmp 
           (tr '\n' ' ' | sed 's|^ ||;s| $||') < tmp > po/LINGUAS
@@ -41,6 +41,24 @@ jobs:
     - run: git status    
     - run: git diff --patch
 
+    - name: Commit changes
+      run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git add po/*.po po/LINGUAS
+        if ! git diff-index --cached --quiet HEAD "$NEW"; then
+          git commit -m 'po: add new translations' "$NEW" po/LINGUAS
+        fi
+        if ! git diff-index --cached --quiet HEAD "$CHANGED"; then
+          git commit -m 'po: add new translations' "$CHANGED"
+        fi
+      env:
+        NEW: "${{ steps.pofiles.outputs.new }}"
+        CHANGED: "${{ steps.pofiles.outputs.changed }}"
+
+    - run: git log
+    - run: git log -p1
+ 
     #- name: Create pull request
     #  uses: peter-evans/create-pull-request@v6
     #  with:
