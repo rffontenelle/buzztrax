@@ -24,15 +24,15 @@ err_msg() {
   exit 1
 }
 
-# check for 'blahdiff' program
-blahdiff --version 2>/dev/null >/dev/null
-if [ ! $? ]; then
-  err_msg "==== You must have the 'blahdiff' program installed for this script ===="
+# check for 'diff' program
+diff --version 2>/dev/null >/dev/null
+if [ $? -ne 0 ]; then
+  err_msg "==== You must have the 'diff' program installed for this script ===="
 fi
 
 # check for 'wget' program
 wget --version 2>/dev/null >/dev/null
-if [ ! $? ]; then
+if [ $? -ne 0 ]; then
   err_msg "==== You must have the 'wget' program installed for this script ===="
 fi
 
@@ -64,7 +64,7 @@ do
                               --to-code=UTF-8; then
         mv $PO_FILENAME.utf8 $PO_FILENAME
       else
-        echo "**** $l: conversion from $CHARSET to UTF-8 failed ****" >&2
+        echo "**** $l: conversion from $CHARSET to UTF-8 failed ****"
       fi
     fi
     if [ -f "po/$l.po" ]; then
@@ -96,7 +96,7 @@ do
     fi
   else
     rm -f $PO_FILENAME
-    echo "$l.po: failure (does probably not exist)" >&2
+    echo "$l.po: failure (does probably not exist)"
   fi
 done
 
@@ -127,3 +127,4 @@ if [ -n "$LANGUAGES_UPDATED" ]; then
   echo "===================================================================="
 fi
 
+exit 1
