@@ -6,32 +6,39 @@
 # We need to check all languages, not only po/LINGUAS, since there might be
 # new translations
 LANGUAGES=\
-"af am ar az be bg pt_BR bs ca zh_CN cs cy da de el eo es et eu fa fi fr "\
-"ga en_GB gl gu he hi zh_HK hr hu id is it ja ko ku ky lg lt lv mk mn ms "\
-"mt nb ne nl nn or pa pl pt rm ro ru rw sk sl sq sr sv ta tq th tk "\
-"tr zh_TW uk ven vi wa xh zu"
+"ab af an ar ast be bg bn bn_IN ca ckb crh cs da de el en_GB eo es et eu "\
+"fa fi fr fur ga gd gl gu he hi hr hu hy id is it ja ka kk kn ko ku ky lg "\
+"lt lv mk ml mn mr ms mt nb ne nl nn or pa pl pt pt_BR ro ru rw sk sl sq "\
+"sr sv sw ta te tg th tr uk ur vi wa wo zh_CN zh_HK zh_TW"
+
 
 # for testing/debugging:
 #LANGUAGES="es fr hu sv pl xx"
 
-# check for 'diff' program
-diff --version 2>/dev/null >/dev/null
-if [ ! $? ]; then
-  echo "==== You must have the 'diff' program installed for this script ===="
+# print error message and exit,
+# prepend problem matcher if running in GitHub Actions
+err_msg() {
+  local prefix
+  [ -n "$CI" ] && prefix="::error::"
+  echo $prefix"$*" >&2
   exit 1
+}
+
+# check for 'blahdiff' program
+blahdiff --version 2>/dev/null >/dev/null
+if [ ! $? ]; then
+  err_msg "==== You must have the 'blahdiff' program installed for this script ===="
 fi
 
 # check for 'wget' program
 wget --version 2>/dev/null >/dev/null
 if [ ! $? ]; then
-  echo "==== You must have the 'wget' program installed for this script ===="
-  exit 1
+  err_msg "==== You must have the 'wget' program installed for this script ===="
 fi
 
 # make sure we're in the top-level directory
 if [ ! -d ./po ]; then
-  echo "==== No ./po directory in the current working directory ===="
-  exit 1
+  err_msg "==== No ./po directory in the current working directory ===="
 fi
 
 DOMAIN="buzztrax"
@@ -57,7 +64,7 @@ do
                               --to-code=UTF-8; then
         mv $PO_FILENAME.utf8 $PO_FILENAME
       else
-        echo "**** $l: conversion from $CHARSET to UTF-8 failed ****"
+        echo "**** $l: conversion from $CHARSET to UTF-8 failed ****" >&2
       fi
     fi
     if [ -f "po/$l.po" ]; then
@@ -89,11 +96,11 @@ do
     fi
   else
     rm -f $PO_FILENAME
-    echo "$l.po: failure (does probably not exist)"
+    echo "$l.po: failure (does probably not exist)" >&2
   fi
 done
 
-if [ -n "LANGUAGES_UPDATED" ]; then
+if [ -n "$LANGUAGES_UPDATED" ]; then
   echo "===================================================================="
   echo
   echo "Language codes updated    :$LANGUAGES_UPDATED"
@@ -103,7 +110,7 @@ if [ -n "LANGUAGES_UPDATED" ]; then
   echo
   if [ -n "$LANGUAGES_TO_ADD" ]; then
     CMD_STRING="git add"
-    for d in $LANGUAGES_TO_ADD; do
+    for l in $LANGUAGES_TO_ADD; do
       CMD_STRING="$CMD_STRING po/$l.po"
     done
     CMD_STRING="$CMD_STRING; git commit -m \"add new translations\""
@@ -119,5 +126,4 @@ if [ -n "LANGUAGES_UPDATED" ]; then
   fi
   echo "===================================================================="
 fi
-
 
