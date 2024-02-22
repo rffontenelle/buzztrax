@@ -25,13 +25,6 @@ jobs:
       run: |
         sh -x
 
-        #git fetch origin \
-        #  '+refs/heads/${{
-        #      env.I18N_BRANCH
-        #  }}:refs/remotes/origin/${{
-        #      env.I18N_BRANCH
-        #  }}'
-
         git checkout -B '${{ env.I18N_BRANCH }}' \
           'origin/${{ env.I18N_BRANCH }}'
 
