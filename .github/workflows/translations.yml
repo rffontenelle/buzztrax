@@ -24,11 +24,15 @@ jobs:
     - name: Set up git user as [bot]
       uses: fregante/setup-git-user@v2
 
-    - name: Switch to the translation branch
+    - name: Switch to a translation branch
+      env:
+        BRANCH: ${{env.I18N_BRANCH}}
       run: |
-        sh -x
-        git fetch origin '${{ env.I18N_BRANCH }}:${{ env.I18N_BRANCH }}'
-        git checkout -B '${{ env.I18N_BRANCH }}' 'origin/${{ env.I18N_BRANCH }}'
+        if git fetch origin "+refs/heads/${BRANCH}:refs/remotes/origin/${BRANCH}"; then
+          git checkout -B "${BRANCH}" "origin/${BRANCH}"
+        else
+          git checkout --track "origin/${BRANCH}"
+        fi
 
     - name: Download translations from Translation Project
       run: |
