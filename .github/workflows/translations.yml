@@ -2,7 +2,7 @@ name: Download translations
 
 on:
   workflow_dispatch:
-  pushes:
+  push:
     paths:
      - .github/workflows/translations.yml
   #scheduled:
