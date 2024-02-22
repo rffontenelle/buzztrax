@@ -15,7 +15,7 @@ jobs:
 
     - name: Download translations from Translation Project
       run: |
-        ./download-translations
+        sh -xe ./download-translations
 
     - name: Commit changed PO files, if any
       run: |
