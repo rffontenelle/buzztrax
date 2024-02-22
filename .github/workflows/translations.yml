@@ -22,8 +22,7 @@ jobs:
     - name: Output list of languages files
       id: pofiles
       run: |
-        new="$(git status -s po/*.po | grep '^??' | sed 's|^?? ||')"
-        echo "new=$new" >> GITHUB_OUTPUT
+        echo "new=$(git status -s po/*.po | grep '^??' | sed 's|^?? ||')" >> GITHUB_OUTPUT
         echo "changed=$(git status -s po/*.po | grep '^ M' | sed 's|^ M ||')" >> GITHUB_OUTPUT
 
     - name: Update LINGUAS with new languages, if any
@@ -31,13 +30,14 @@ jobs:
         if [ -n "${{ steps.pofiles.outputs.new }}" ]; then
           langs=$(echo "${{ steps.pofiles.outputs.new }}" | sed 's|po/||g;s|\.po||g')
           echo "INFO: Adding language codes to po/LINGUAS: $langs"
-          for l in "$langs"; do echo $l >> po/LINGUAS
+          for l in "$langs"; do echo $l >> po/LINGUAS; done
           sort -u po/LINGUAS > po/LINGUAS.tmp
           mv po/LINGUAS.tmp po/LINGUAS
         else
           echo "No new translation files, po/LINGUAS not changed."
         fi
 
+    - run: git status    
     - run: git diff --patch
 
     #- name: Create pull request
