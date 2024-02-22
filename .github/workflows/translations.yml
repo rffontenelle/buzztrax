@@ -46,11 +46,11 @@ jobs:
         git config user.name github-actions
         git config user.email github-actions@github.com
         git add po/*.po po/LINGUAS
-        if ! git diff-index --cached --quiet HEAD "$NEW"; then
-          git commit -m 'po: add new translations' "$NEW" po/LINGUAS
+        if ! git diff-index --cached --quiet HEAD $NEW; then
+          git commit -m 'po: add new translations' $NEW po/LINGUAS
         fi
-        if ! git diff-index --cached --quiet HEAD "$CHANGED"; then
-          git commit -m 'po: add new translations' "$CHANGED"
+        if ! git diff-index --cached --quiet HEAD $CHANGED; then
+          git commit -m 'po: add new translations' $CHANGED
         fi
       env:
         NEW: "${{ steps.pofiles.outputs.new }}"
