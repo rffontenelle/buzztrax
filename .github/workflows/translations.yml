@@ -31,7 +31,7 @@ jobs:
         if git fetch origin "+refs/heads/${BRANCH}:refs/remotes/origin/${BRANCH}"; then
           git checkout -B "${BRANCH}" "origin/${BRANCH}"
         else
-          git checkout --track "origin/${BRANCH}"
+          git checkout --track -b "origin/${BRANCH}"
         fi
 
     - name: Download translations from Translation Project
