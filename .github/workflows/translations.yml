@@ -15,40 +15,40 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up git config and branch
-      run: |
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        git branch translations
-        git switch translations
-
     - name: Download translations from Translation Project
       run: |
         ./download-translations
 
-    - name: Commit changed PO files, if any
+    - name: Output list of languages files
+      id: pofiles
       run: |
-        pofiles=$(git status -s po/*.po | grep '^ M' | sed 's|^ M ||')
-        if [ ! -z "$pofiles" ]; then
-          echo $pofiles
-          git commit -m 'po: update translations' $pofiles
+        echo "new=$(git status -s po/*.po | grep '^??' | sed 's|^?? ||')" >> GITHUB_OUTPUT
+        echo "changed=$(git status -s po/*.po | grep '^ M' | sed 's|^ M ||')" >> GITHUB_OUTPUT
+
+    - name: Update LINGUAS with new languages, if any
+      run: |
+        if [ ! -z "${{steps.pofiles.outputs.new}}" ]; then
+          langs=$(echo ${{steps.pofiles.outputs.new}} | s|po/||g;s|\.po||g')
+          echo "INFO: Adding language codes to po/LINGUAS: $langs"
+          for l in "$langs"; do echo $l >> po/LINGUAS
+          sort -u po/LINGUAS > po/LINGUAS.tmp
+          mv po/LINGUAS.tmp po/LINGUAS
         else
-          echo 'No tracked PO files changed'
+          echo "No new translation files, po/LINGUAS not changed."
         fi
 
-    - name: Commit new PO files, if any
-      run: |
-        pofiles=$(git status -s po/*.po | grep '^??' | sed 's|^?? ||')
-        if [ ! -z "$pofiles" ]; then
-          echo $pofiles
-          git add $pofiles
-          langs=$(echo $pofiles | sed 's|po/||g;s|\.po||g')
-          echo langs
-          sed "s|$| $langs|" po/LINGUAS | tr ' ' '\n' | sort | tr '\n' ' '
-          git commit -m 'po: add new translations' po/*.po po/LINGUAS
-        else
-          echo 'No new PO files to add'
-        fi
+    - run: git diff --patch
 
-    - name: Open a pull request
-      uses: peter-evans/create-pull-request@v6
+    #- name: Create pull request
+    #  uses: peter-evans/create-pull-request@v6
+    #  with:
+    #    add-paths: |
+    #      po/*.po
+    #      po/LINGUAS
+    #    commit-message:
+    #    branch: create-pull-request/translations
+    #    title: Update translates from Translation Project
+    #    body: 
+    #    commit-message: |
+       
+    
