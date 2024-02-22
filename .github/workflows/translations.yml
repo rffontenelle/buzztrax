@@ -2,9 +2,7 @@ name: Download translations
 
 on:
   workflow_dispatch:
-  #scheduled:
-    # run daily at 00:00.
-  #  - cron: '0 0 * * *'
+  push:
 
 permissions:
   pull-requests: write
@@ -13,7 +11,7 @@ jobs:
   translations:
     runs-on: ubuntu-latest
     steps:
-    - name: actions/checkout@v4
+    - uses: actions/checkout@v4
 
     - name: Download translations from Translation Project
       run: |
