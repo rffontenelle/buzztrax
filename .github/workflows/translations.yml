@@ -28,10 +28,10 @@ jobs:
       env:
         BRANCH: ${{env.I18N_BRANCH}}
       run: |
-        if git fetch origin "+refs/heads/${BRANCH}:refs/remotes/origin/${BRANCH}"; then
+        if git fetch origin "+refs/heads/${BRANCH}:refs/remotes/origin/${BRANCH}" --quiet; then
           git checkout -B "${BRANCH}" "origin/${BRANCH}"
         else
-          git checkout --track -b "origin/${BRANCH}"
+          git checkout -b ${BRANCH} --track "origin/${BRANCH}"
         fi
 
     - name: Download translations from Translation Project
@@ -78,5 +78,6 @@ jobs:
         title: Update translations from Translation Project
         delete-branch: true
         base: master
+        branch: ${{env.I18N_BRANCH}}
        
     
