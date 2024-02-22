@@ -27,7 +27,7 @@ jobs:
         echo "changed=$(git status -s po/*.po | grep '^ M' | sed 's|^ M ||')" >> GITHUB_OUTPUT
 
     - name: Update LINGUAS with new languages, if any
-      run: |
+      run: >-
         if [ -n "${{ steps.pofiles.outputs.new }}" ]; then
           langs=$(echo "${{ steps.pofiles.outputs.new }}" | sed 's|po/||g;s|\.po||g')
           echo "INFO: Adding language codes to po/LINGUAS: $langs"
