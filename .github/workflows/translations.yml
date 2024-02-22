@@ -19,7 +19,7 @@ jobs:
       run: |
         ./download-translations
 
-    - name: Output the new and changed translations files
+    - name: Output the new and changed translation files
       id: pofiles
       run: |
         echo "new=$(git status -s po/*.po | grep '^??' | sed 's|^?? ||' | tr '\n' ' ')" >> $GITHUB_OUTPUT
@@ -30,9 +30,9 @@ jobs:
         if [ -n "${{ steps.pofiles.outputs.new }}" ]; then
           langs=$(echo "${{ steps.pofiles.outputs.new }}" | sed 's|po/||g;s|\.po||g')
           echo "INFO: Adding language codes to po/LINGUAS: $langs"
-          for l in "$langs"; do echo $l >> po/LINGUAS; done
-          sort -u po/LINGUAS > po/LINGUAS.tmp
-          mv po/LINGUAS.tmp po/LINGUAS
+          echo "$langs" >> po/LINGUAS
+          (tr ' ' '\n' | sort -u) < po/LINGUAS > tmp 
+          (tr '\n' ' ' | sed 's| $||') < tmp > po/LINGUAS
         else
           echo "No new translation files, po/LINGUAS not changed."
         fi
