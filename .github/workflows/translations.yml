@@ -2,6 +2,9 @@ name: Download translations
 
 on:
   workflow_dispatch:
+  pushes:
+    paths:
+     - .github/workflows/translations.yml
   #scheduled:
     # run daily at 00:00.
   #  - cron: '0 0 * * *'
@@ -24,9 +27,8 @@ jobs:
     - name: Switch to the translation branch
       run: |
         sh -x
-
-        git checkout -B '${{ env.I18N_BRANCH }}' \
-          'origin/${{ env.I18N_BRANCH }}'
+        git fetch origin '${{ env.I18N_BRANCH }}:${{ env.I18N_BRANCH }}'
+        git checkout -B '${{ env.I18N_BRANCH }}' 'origin/${{ env.I18N_BRANCH }}'
 
     - name: Download translations from Translation Project
       run: |
