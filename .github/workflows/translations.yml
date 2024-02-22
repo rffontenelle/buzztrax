@@ -13,7 +13,7 @@ jobs:
   translations:
     runs-on: ubuntu-latest
     steps:
-    - name: Retreive source repository
+    - name: Retrieve source repository
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
@@ -25,12 +25,12 @@ jobs:
       run: |
         sh -x
 
-        git fetch origin \
-          '+refs/heads/${{
-              env.I18N_BRANCH
-          }}:refs/remotes/origin/${{
-              env.I18N_BRANCH
-          }}'
+        #git fetch origin \
+        #  '+refs/heads/${{
+        #      env.I18N_BRANCH
+        #  }}:refs/remotes/origin/${{
+        #      env.I18N_BRANCH
+        #  }}'
 
         git checkout -B '${{ env.I18N_BRANCH }}' \
           'origin/${{ env.I18N_BRANCH }}'
