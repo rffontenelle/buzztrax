@@ -6,20 +6,40 @@ on:
     # run daily at 00:00.
   #  - cron: '0 0 * * *'
 
-permissions:
-  pull-requests: write
+env:
+  I18N_BRANCH: translations
 
 jobs:
   translations:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - name: Retreive source repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up git user as [bot]
+      uses: fregante/setup-git-user@v2
+
+    - name: Switch to the translation branch
+      run: |
+        sh -x
+
+        git fetch origin \
+          '+refs/heads/${{
+              env.I18N_BRANCH
+          }}:refs/remotes/origin/${{
+              env.I18N_BRANCH
+          }}'
+
+        git checkout -B '${{ env.I18N_BRANCH }}' \
+          'origin/${{ env.I18N_BRANCH }}'
 
     - name: Download translations from Translation Project
       run: |
         ./download-translations
 
-    - name: Output the new and changed translation files
+    - name: Set up output for new and changed translation files
       id: pofiles
       run: |
         echo "new=$(git status -s po/*.po | grep '^??' | sed 's|^?? ||' | tr '\n' ' ')" >> $GITHUB_OUTPUT
@@ -38,14 +58,11 @@ jobs:
           echo "No new translation files, po/LINGUAS not changed."
         fi
 
-    - run: git status    
-    - run: git diff --patch
+    - run: git status
 
     - name: Commit changes
       run: |
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        git add po/*.po po/LINGUAS
+        git add po/*.po
         if ! git diff-index --cached --quiet HEAD $NEW; then
           git commit -m 'po: add new translations' $NEW po/LINGUAS
         fi
@@ -55,20 +72,12 @@ jobs:
       env:
         NEW: "${{ steps.pofiles.outputs.new }}"
         CHANGED: "${{ steps.pofiles.outputs.changed }}"
-
-    - run: git log
-    - run: git log -p1
  
-    #- name: Create pull request
-    #  uses: peter-evans/create-pull-request@v6
-    #  with:
-    #    add-paths: |
-    #      po/*.po
-    #      po/LINGUAS
-    #    commit-message:
-    #    branch: create-pull-request/translations
-    #    title: Update translates from Translation Project
-    #    body: 
-    #    commit-message: |
+    - name: Create pull request
+      uses: peter-evans/create-pull-request@v6
+      with:
+        title: Update translations from Translation Project
+        delete-branch: true
+        base: master
        
     
