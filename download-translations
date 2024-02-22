@@ -91,7 +91,6 @@ do
       # website, so it's probably a new translation
       echo "$l.po: new language"
       mv $PO_FILENAME "po/$l.po"
-      LANGUAGES_UPDATED="$LANGUAGES_UPDATED $l"
       LANGUAGES_TO_ADD="$LANGUAGES_TO_ADD $l"
     fi
   else
